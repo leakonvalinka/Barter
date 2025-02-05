@@ -1,0 +1,44 @@
+<div
+  class="group relative bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer overflow-hidden hover:bg-gray-50">
+  <!-- Gradient Overlay -->
+  <!-- <div -->
+  <!--   class="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl" -->
+  <!--   id="link-offer-{{offer().id}}"></div> -->
+
+  <!-- Category Badge -->
+  <span class="inline-block px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full mb-3">
+    {{ offer().category.name }}
+  </span>
+
+  <!-- Title -->
+  <h3 class="text-xl font-semibold text-gray-900 mb-2 break-words truncate max-w-[calc(100%)]">
+    {{offer().title}}
+  </h3>
+
+  <div class="mt-4 flex gap-2 justify-end">
+    <btn class="text-sm rounded-md text-gray-600 hover:text-gray-900 transition-colors duration-200 shadow-md p-2"
+      [ngpDialogTrigger]="dialog">
+      Edit
+    </btn>
+    <button
+      class="text-sm text-white rounded-md bg-red-600 hover:bg-red-700 transition-colors duration-200 shadow-md shadow-gray-400 p-2"
+      (click)="delete.emit(offer().id)"> Delete
+    </button>
+
+  </div>
+</div>
+
+<ng-template #dialog let-close="close">
+  <div ngpDialogOverlay class="fixed top-0 left-0 w-screen h-screen backdrop-blur bg-black/40 z-50">
+    <div ngpDialog
+      class="w-2/3 lg:w-1/2 xl:w-1/3 h-fit mx-auto fixed top-1/2 left-1/2 md:p-8 p-4 -translate-x-1/2 -translate-y-1/2 bg-white shadow-md shadow-black/30 rounded-lg z-[51]">
+      <app-offer-form [categories]="categories()" (cancel)="close()" [offer]="offer()"
+        (submit)="onSubmit($event, close)">
+        <ng-container ngProjectAs="submitBtnContent">
+          <i class="material-icons icons-outlined mr-1">save</i>
+          Edit
+        </ng-container>
+      </app-offer-form>
+    </div>
+  </div>
+</ng-template>

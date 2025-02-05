@@ -1,0 +1,9 @@
+:host {
+    display: block;
+  }
+  
+  .archive-section {
+    &-enter, &-leave {
+      transition: max-height 0.2s ease-in-out;
+    }
+  }

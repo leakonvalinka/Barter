@@ -1,0 +1,36 @@
+<div class="registration-container flex flex-col justify-center items-center min-h-screen">
+  <div class="absolute top-5 left-5 flex items-center">
+    <img class="w-12 h-auto" src="logo/logo_purple_500x500.png" alt="logo">
+    <span class="logo-text text-4xl font-bold">arter</span>
+  </div>
+
+  <div class="form-container w-full max-w-md p-8 border-r-lg text-center">
+    <h1 class="text-3xl font-bold mb-8">Verify Account</h1>
+
+    <form [formGroup]="verificationForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <input type="email" placeholder="Email address" formControlName="email" />
+        <small
+          *ngIf="verificationForm?.get('email')?.invalid && (verificationForm?.get('email')?.dirty || verificationForm?.get('email')?.touched)">
+          Please enter a valid email address.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <input type="text" placeholder="000000" formControlName="verificationCode" />
+        <small
+          *ngIf="verificationForm?.get('verificationCode')?.invalid && (verificationForm?.get('verificationCode')?.dirty || verificationForm?.get('verificationCode')?.touched)">
+          Verification code is a 6 digit number, including leading zeros
+        </small>
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="verificationForm.invalid">
+        Verify account
+      </button>
+    </form>
+
+    <div class="login-ref mt-16">
+      <p class=" text-sm ">Already have an account? <a routerLink="/login" class="font-bold no-underline">Login</a></p>
+    </div>
+  </div>
+</div>

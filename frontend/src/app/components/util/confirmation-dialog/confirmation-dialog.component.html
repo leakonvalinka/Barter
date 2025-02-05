@@ -1,0 +1,22 @@
+<div ngpDialogOverlay>
+  <div ngpDialog>
+    <h1 ngpDialogTitle>{{ dialogRef.data?.title }}</h1>
+    <p ngpDialogDescription>{{ dialogRef.data?.message }}</p>
+
+    <div *ngIf="dialogRef.data?.showTextField" class="text-field-container mt-4">
+      <label *ngIf="dialogRef.data?.textFieldLabel">{{ dialogRef.data?.textFieldLabel }}</label>
+      <textarea id="confirm-dialog-input" [(ngModel)]="userText" [placeholder]="dialogRef.data?.textFieldPlaceholder || ''" class="form-control"
+        rows="3">
+      </textarea>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-secondary" (click)="close(false)" *ngIf="dialogRef.data?.cancelText !== false">
+        {{ dialogRef.data?.cancelText || 'Cancel' }}
+      </button>
+      <button class="btn btn-danger" [disabled]="!isConfirmEnabled()" (click)="close(true)">
+        {{ dialogRef.data?.confirmText || 'Confirm' }}
+      </button>
+    </div>
+  </div>
+</div>
+

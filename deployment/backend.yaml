@@ -1,0 +1,168 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: barter-backend
+  namespace: 24ws-ase-pr-inso-02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: barter-backend
+  template:
+    metadata:
+      labels:
+        app: barter-backend
+    spec:
+      initContainers:
+      - name: init-wait-for-db
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "100m"
+            ephemeral-storage: "10Mi"
+          limits:
+            memory: "100Mi"
+            cpu: "100m"
+            ephemeral-storage: "10Mi"
+        image: alpine
+        command: ["/bin/sh", "-c", "for i in $(seq 1 300); do nc -zvw1 postgres 5432 && exit 0 || sleep 3; done; exit 1"]
+      containers:
+      - name: backend
+        image: registry.reset.inso-w.at/2024ws-ase-pr-group/24ws-ase-pr-inso-02/backend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "300Mi"
+            cpu: "10m"
+            ephemeral-storage: "200Mi"
+          limits:
+            memory: "2000Mi"
+            cpu: "450m"
+            ephemeral-storage: "400Mi"
+        # livenessProbe:
+        #   httpGet:
+        #     port: 8080
+        #     path: /api/q/health/live
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 3
+        # readinessProbe:
+        #   httpGet:
+        #     port: 8080
+        #     path: /api/q/health/ready
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 3
+        # startupProbe:
+        #   httpGet:
+        #     port: 8080
+        #     path: /api/q/health/started
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 5
+        #   failureThreshold: 120
+        env:
+        - name: QUARKUS_DATASOURCE_JDBC_URL
+          value: jdbc:postgresql://postgres:5432/barter
+        - name: QUARKUS_DATASOURCE_USERNAME
+          # value: barter
+          valueFrom:
+              secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+        - name: QUARKUS_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD 
+        - name: QUARKUS_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD 
+        - name: QUARKUS_DATASOURCE_DB
+          # value: barter
+          valueFrom:
+              configMapKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_DB
+        - name: QUARKUS_MAILER_HOST
+          value: mailpit
+        - name: QUARKUS_MAILER_PORT
+          value: '1025'
+        - name: QUARKUS_HTTP_ROOT_PATH
+          value: /api
+        - name: QUARKUS_MAILER_TLS
+          value: 'false'
+        - name: QUARKUS_RABBITMQCLIENT_USERNAME
+          # value: barter
+          valueFrom:
+              secretKeyRef:
+                  name: rabbitmq-secret
+                  key: RABBITMQ_DEFAULT_USER
+        - name: QUARKUS_RABBITMQCLIENT_PASSWORD
+          # value: barter
+          valueFrom:
+              secretKeyRef:
+                  name: rabbitmq-secret
+                  key: RABBITMQ_DEFAULT_PASS 
+        - name: QUARKUS_RABBITMQCLIENT_PORT
+          value: "5672"
+        - name: QUARKUS_RABBITMQCLIENT_HOSTNAME
+          value: rabbitmq
+
+      - name: mailpit
+        image: axllent/mailpit 
+        imagePullPolicy: IfNotPresent
+        args: ["--webroot", "mail"]
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "10m"
+            ephemeral-storage: "100Mi"
+          limits:
+            memory: "200Mi"
+            cpu: "450m"
+            ephemeral-storage: "200Mi"
+        ports:
+        - containerPort: 8025
+        - containerPort: 1025
+          protocol: TCP
+        env:
+        - name: MP_SMTP_AUTH_ACCEPT_ANY
+          value: '1'
+        - name: MP_SMTP_AUTH_ALLOW_INSECURE 
+          value: '1'
+      imagePullSecrets:
+        - name: secret-dockercfg
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: barter-backend
+  namespace: 24ws-ase-pr-inso-02
+spec:
+  selector:
+    app: barter-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailpit 
+  namespace: 24ws-ase-pr-inso-02
+spec:
+  selector:
+    app: barter-backend
+  ports:
+    - protocol: TCP
+      name: web
+      port: 80
+      targetPort: 8025
+    - protocol: TCP
+      name: smtp
+      port: 1025
+      targetPort: 1025
+

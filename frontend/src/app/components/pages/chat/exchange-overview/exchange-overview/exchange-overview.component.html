@@ -1,0 +1,63 @@
+<div class="w-full max-w-3xl mx-auto">
+  <!-- Header Section -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-purple-600">Exchange Overview</h1>
+  </div>
+
+  <!-- Exchange Items -->
+  <div class="grid grid-cols-1 gap-6">
+    <div *ngFor="let exchange of exchangeChat.exchanges" class="p-4 border rounded-lg">
+      <div class="grid grid-cols-3 items-center items-stretch gap-4">
+        <!-- Left Side: Your Skills -->
+        <div class="flex flex-col items-center">
+          <h3 class="text-lg font-medium text-purple-600 mb-3">Your Skills</h3>
+          <div class="text-center">
+            <p class="cursor-pointer font-semibold text-gray-800 break-words"
+            (click)="navigateToSkill(exchange.exchangedSkill)"
+            >{{ showYourExchangeSkill(exchange.exchangedSkill) }}</p>
+            <p *ngIf="currentUserHasSkill(exchange)" class="text-sm text-gray-500 italic mb-4">{{ showDemandOrOffer((exchange.exchangedSkill)) }}</p>
+            <p *ngIf="currentUserHasCounterPart(exchange)"
+               class="cursor-pointer font-semibold text-gray-800 break-words"
+               (click)="navigateToSkill(exchange.exchangedSkillCounterpart)"
+            >{{ showYourExchangeSkill(exchange.exchangedSkillCounterpart) }}</p>
+            <p *ngIf="currentUserHasCounterPart(exchange)" class="text-sm text-gray-500 italic">{{ showDemandOrOffer((exchange.exchangedSkillCounterpart)) }}</p>
+          </div>
+        </div>
+
+        <!-- Center Arrow -->
+        <div class="flex justify-center items-center">
+          <div class="flex flex-col items-center">
+            <i class="material-icons-outlined text-gray-600 text-highlight">swap_horiz</i>
+          </div>
+        </div>
+
+        <!-- Right Side: Their Skills -->
+        <div class="flex flex-col items-center">
+          <h3 class="text-lg font-medium text-purple-600 mb-3">Their Skills</h3>
+          <div class="text-center">
+            <p class="cursor-pointer font-semibold text-gray-800 break-words"
+               (click)="navigateToSkill(exchange.exchangedSkill)"
+            >{{ showTheirExchangeSkill(exchange.exchangedSkill) }}</p>
+            <p *ngIf="!currentUserHasSkill(exchange)" class="text-sm text-gray-500 italic mb-4 break-words sm:truncate">{{ showDemandOrOffer((exchange.exchangedSkill)) }}</p>
+            <p *ngIf="otherUserHasCounterPart(exchange)"
+               class="cursor-pointer font-semibold text-gray-800 break-words"
+               (click)="navigateToSkill(exchange.exchangedSkillCounterpart)"
+            >{{ showTheirExchangeSkill(exchange.exchangedSkillCounterpart) }}</p>
+            <p *ngIf="otherUserHasCounterPart(exchange)" class="text-sm text-gray-500 italic">{{ showDemandOrOffer((exchange.exchangedSkillCounterpart)) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Note -->
+  <p class="text-sm text-center text-gray-500 mt-4">
+    To accept the exchange, simply respond with a Chat Message. Incomplete Exchanges are ratable after 3 days of inactivity.
+  </p>
+
+  <!-- Confirmation Buttons -->
+  <div class="flex flex-col lg:flex-row justify-between gap-4 mt-8">
+    <button class="btn btn-secondary hover:opacity-90 transition-opacity" (click)="back()">Back</button>
+    <button class="btn btn-primary" (click)="markAsCompleted()">Mark as Completed</button>
+  </div>
+</div>

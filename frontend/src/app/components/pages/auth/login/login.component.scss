@@ -1,0 +1,20 @@
+@use '../../../../../styles/_variables.scss' as *;;
+@use 'sass:color';
+
+.form-container .forgot-password a {
+    color: $highlight;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .form-container .forgot-password a:hover {
+    color: color.adjust($highlight, $lightness: -10%);
+  }
+
+.form-container .register-ref p {
+    color: #334155;
+}
+
+.form-container .register-ref p a {
+    color: $highlight;
+}

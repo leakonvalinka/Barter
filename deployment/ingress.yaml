@@ -1,0 +1,64 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: barter-ingress
+  namespace: 24ws-ase-pr-inso-02
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: localhost 
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: barter-backend
+            port: 
+              number: 80
+      - path: /rabbitmq
+        pathType: Prefix
+        backend:
+          service:
+            name: rabbitmq-ui 
+            port: 
+              number: 80
+
+      - path: /mail
+        pathType: Prefix
+        backend:
+          service:
+            name: mailpit 
+            port: 
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: barter-frontend
+            port: 
+              number: 80
+  - host: "24ws-ase-pr-inso-02.apps.student.inso-w.at"
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: barter-backend
+            port: 
+              number: 80
+      - path: /mail
+        pathType: Prefix
+        backend:
+          service:
+            name: mailpit 
+            port: 
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: barter-frontend
+            port: 
+              number: 80

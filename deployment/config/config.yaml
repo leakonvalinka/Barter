@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: 24ws-ase-pr-inso-02
+data:
+  POSTGRES_DB: barter
+---
+# https://kubernetes.io/docs/concepts/configuration/configmap/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+  namespace: 24ws-ase-pr-inso-02
+data:
+  key: value

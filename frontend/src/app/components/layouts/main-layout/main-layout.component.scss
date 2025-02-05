@@ -1,0 +1,8 @@
+.content {
+    margin-left: 20rem;
+    
+    @media (max-width: 1023px) {  // lg breakpoint
+        margin-left: 0;
+        margin-bottom: 5rem;
+    }
+}

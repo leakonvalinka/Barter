@@ -1,0 +1,9 @@
+@use '../../../../../styles/_variables.scss' as *;;
+
+.form-container .login-ref p {
+    color: #334155;
+}
+
+.form-container .login-ref p a {
+    color: $highlight;
+}

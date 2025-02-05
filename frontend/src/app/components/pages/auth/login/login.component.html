@@ -1,0 +1,46 @@
+<div class="auth-container flex flex-col justify-center items-center min-h-screen">
+	<div class="absolute top-5 left-5 flex items-center">
+	  <img class="w-12 h-auto" src="logo/logo_purple_500x500.png" alt="logo">
+	  <span class="logo-text text-4xl font-bold">arter</span>
+	</div>
+
+	<div class="form-container w-full max-w-md p-8 border-r-lg text-center">
+	  <h1 class="text-3xl font-bold mb-8">Login</h1>
+
+	  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+		<div class="form-group">
+		  <input
+			type="email"
+			placeholder="Email address"
+			formControlName="email"
+		  />
+		  <small *ngIf="loginForm?.get('email')?.invalid && (loginForm?.get('email')?.dirty || loginForm?.get('email')?.touched)">
+			Please enter a valid email address.
+		  </small>
+		</div>
+
+		<div class="form-group">
+		  <input
+			type="password"
+			placeholder="Enter your password"
+			formControlName="password"
+		  />
+		  <small *ngIf="loginForm?.get('password')?.invalid && (loginForm?.get('password')?.dirty || loginForm?.get('password')?.touched)">
+			Password is required.
+		  </small>
+		</div>
+
+		<div class="forgot-password mt-4 text-sm text-center mb-4">
+			<a routerLink="/forgot-password" class="font-semibold text-highlight hover:text-highlight-dark">Forgot password?</a>
+		</div>
+
+		<button type="submit" class="btn btn-primary w-full mt-8" [disabled]="loginForm.invalid">
+		  Login
+		</button>
+	  </form>
+
+	  <div class="register-ref mt-16">
+		<p class="text-sm">Don't have an account? <a routerLink="/register" class="font-bold no-underline">Sign up</a></p>
+	  </div>
+	</div>
+</div>

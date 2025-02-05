@@ -1,0 +1,18 @@
+.card {
+  @apply p-6 bg-white shadow-md rounded-lg;
+}
+
+.btn {
+  @apply flex items-center px-4 py-2 font-semibold rounded shadow;
+}
+
+.star-icon {
+  color: #ffcc00;
+}
+
+@media (max-width: 640px) {
+  .urgency-button {
+    padding: 8px 16px; /* Smaller padding */
+    font-size: 0.875rem; /* Smaller font size */
+  }
+}

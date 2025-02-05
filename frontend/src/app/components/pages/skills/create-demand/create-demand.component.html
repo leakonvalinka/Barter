@@ -1,0 +1,94 @@
+<div class="flex flex-col gap-4 lg:gap-8">
+  <form [formGroup]="demandForm">
+    <h1 class="text-3xl font-bold mb-5 text-center">Create a new demand</h1>
+
+    <!-- Form Fields -->
+    <div class="flex flex-col gap-4 min-w-md">
+
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title" class="text-sm font-medium mb-1">Title</label>
+        <input id="title" formControlName="title"
+               class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+               placeholder="Guitar lessons"/>
+        <div *ngIf="demandForm.get('title')?.invalid && demandForm.get('title')?.touched"
+             class="text-red-500 text-sm mt-1">
+          <small *ngIf="demandForm.get('title')?.errors?.['required']">Title is required.</small>
+          <small *ngIf="demandForm.get('title')?.errors?.['maxlength']">Can be at most 100 characters.</small>
+          <small *ngIf="demandForm.get('title')?.errors?.['minlength']">Must be at least 5 characters.</small>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description" class="text-sm font-medium mb-1">Description</label>
+        <textarea id="description" formControlName="description"
+                  class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+                  placeholder="I need acoustic guitar lessons for a beginner"></textarea>
+        <div class="flex justify-end mt-1">
+          <small class="text-gray-500">
+            {{ demandForm.get('description')?.value?.length || 0 }}/200
+          </small>
+        </div>
+        <div *ngIf="demandForm.get('description')?.invalid && demandForm.get('description')?.touched"
+             class="text-red-500 text-sm mt-1">
+          <small *ngIf="demandForm.get('description')?.errors?.['required']">Description is required.</small>
+          <small *ngIf="demandForm.get('description')?.errors?.['maxlength']">Can be at most 200 characters.</small>
+          <small *ngIf="demandForm.get('description')?.errors?.['minlength']">Must be at least 10 characters.</small>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category" class="text-sm font-medium mb-1">Category</label>
+        <select id="category" formControlName="category"
+                class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500">
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+        <div *ngIf="demandForm.get('category')?.invalid && demandForm.get('category')?.touched"
+             class="text-red-500 text-sm mt-1">
+          <small *ngIf="demandForm.get('category')?.errors?.['required']">Category is required.</small>
+        </div>
+      </div>
+
+      <!-- Urgency -->
+      <div class="mb-6 w-full">
+        <label for="urgency" class="block text-lg font-bold text-gray-800 mb-2">Urgency</label>
+        <div class="flex flex-wrap" style="gap: 8px;">
+          <button
+            id="urgency"
+            *ngFor="let level of demandUrgencies"
+            type="button"
+            [class.text-gray-900]="level === DemandUrgency.NONE"
+            [class.text-green-900]="level === DemandUrgency.LOW"
+            [class.text-yellow-900]="level === DemandUrgency.MEDIUM"
+            [class.text-orange-900]="level === DemandUrgency.HIGH"
+            [class.text-red-900]="level === DemandUrgency.CRITICAL"
+
+            [class.bg-gray-300]="level === DemandUrgency.NONE && demandForm.get('urgency')?.value == level"
+            [class.bg-green-300]="level === DemandUrgency.LOW && demandForm.get('urgency')?.value == level"
+            [class.bg-yellow-300]="level === DemandUrgency.MEDIUM && demandForm.get('urgency')?.value == level"
+            [class.bg-orange-300]="level === DemandUrgency.HIGH && demandForm.get('urgency')?.value == level"
+            [class.bg-red-300]="level === DemandUrgency.CRITICAL && demandForm.get('urgency')?.value == level"
+            [class.scale-110]="demandForm.get('urgency')?.value === level"
+
+            class="urgency-button px-6 py-3 rounded shadow transition-all duration-200 transform"
+            (click)="setUrgency(level)"
+          >
+            {{ getUrgencyLabel(level) }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-row justify-between gap-4 mt-8">
+      <button class="btn btn-secondary hover:opacity-90 transition-opacity" (click)="cancel()">
+        <i class="material-icons-outlined mr-1">close</i> Cancel
+      </button>
+      <button [disabled]="demandForm.invalid" type="submit" (click)="onSubmit()" class="btn btn-primary">
+        <i class="material-icons-outlined mr-1">add_circle</i> Create
+      </button>
+    </div>
+  </form>
+</div>

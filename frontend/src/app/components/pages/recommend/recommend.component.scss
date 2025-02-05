@@ -1,0 +1,43 @@
+@use 'sass:color';
+@use '../../../../styles/variables' as *;
+// Adding button styles using the variables
+button {
+    &.primary {
+        background-color: $btn-primary-color;
+        color: $bg-color;
+        
+        &:hover {
+            background-color: color.scale($btn-primary-color, $lightness: -$btn-hover-darken);
+        }
+    }
+    
+    &.secondary {
+        border: $btn-secondary-border;
+        color: $text-color;
+        
+        &:hover {
+            background-color: $btn-secondary-hover-color;
+        }
+    }
+}
+
+.bg-lighter-highlight {
+    background-color: $lighter-highlight;
+}
+
+// Status text classes using the variables
+.text-danger {
+    color: $text-danger;
+}
+
+.text-success {
+    color: $text-success;
+}
+
+.text-warning {
+    color: $text-warning;
+}
+
+.text-secondary {
+    color: $text-secondary;
+}

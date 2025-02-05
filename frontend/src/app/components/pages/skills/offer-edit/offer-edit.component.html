@@ -1,0 +1,128 @@
+<div class="min-h-screen">
+  <div *ngIf="isAuthorized === undefined" class="min-h-screen flex items-center justify-center p-4">
+
+  </div>
+
+
+  <!-- Unauthorized message -->
+  <div *ngIf="!isAuthorized" class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-xl w-full p-8 rounded-2xl bg-white shadow-md">
+      <div class="flex flex-col items-center text-center gap-4">
+        <!-- You can use any warning icon from your icon library here -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <h1 class="text-2xl font-bold text-gray-900">Unauthorized Access</h1>
+        <p class="text-gray-600">You don't have permission to edit this posting. You can only edit postings that belong to you.</p>
+        <button
+          (click)="goBack()"
+          class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Go Back
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isAuthorized" class="flex items-center justify-center p-4">
+    <div class="min-h-screen flex items-center justify-center p-4 lg:w-[700px] lg:h-[500px]">
+      <div class="glass-card max-w-3xl min-h-[400px] w-full p-12 rounded-2xl bg-white shadow-md flex flex-col sm:items-start items-center">
+        <form [formGroup]="skillForm" (ngSubmit)="onSubmit()" class="w-full">
+          <h1 class="text-3xl font-bold mb-5 text-center sm:text-left">Edit your Skill Offer</h1>
+
+          <!-- Title -->
+          <div class="mb-6 w-full">
+            <label for="title" class="block text-lg font-bold text-gray-800 mb-2">Title</label>
+            <input id="title" formControlName="title"
+                  class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+                  placeholder="Guitar lessons"/>
+            <div *ngIf="skillForm.get('title')?.invalid && skillForm.get('title')?.touched"
+                class="text-red-500 text-sm mt-1">
+              <small *ngIf="skillForm.get('title')?.errors?.['required']">Title is required.</small>
+              <small *ngIf="skillForm.get('title')?.errors?.['maxlength']">Can be at most 100 characters.</small>
+              <small *ngIf="skillForm.get('title')?.errors?.['minlength']">Must be at least 5 characters.</small>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-6 w-full">
+            <label for="description" class="block text-lg font-bold text-gray-800 mb-2">Description</label>
+            <textarea id="description" formControlName="description"
+                      class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+                      placeholder="I need acoustic guitar lessons for a beginner"></textarea>
+            <div *ngIf="skillForm.get('description')?.invalid && skillForm.get('description')?.touched"
+                class="text-red-500 text-sm mt-1">
+              <small *ngIf="skillForm.get('description')?.errors?.['required']">Description is required.</small>
+              <small *ngIf="skillForm.get('title')?.errors?.['maxlength']">Can be at most 200 characters.</small>
+              <small *ngIf="skillForm.get('title')?.errors?.['minlength']">Must be at least 10 characters.</small>
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="mb-6 w-full">
+            <label for="category" class="block text-lg font-bold text-gray-800 mb-2">Category</label>
+            <select id="category" formControlName="category"
+                    class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+                    (change)="onCategoryChange($event)"
+            >
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+            <div *ngIf="skillForm.get('category')?.invalid && skillForm.get('category')?.touched"
+                class="text-red-500 text-sm mt-1">
+              <small *ngIf="skillForm.get('category')?.errors?.['required']">Category is required.</small>
+            </div>
+          </div>
+
+          <!-- Schedule -->
+          <div class="mb-6 w-full">
+            <label for="schedule" class="block text-lg font-bold text-gray-800 mb-2">Schedule</label>
+            <input
+              id="schedule"
+              formControlName="schedule"
+              [placeholder]="skill.schedule"
+              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-violet-500"
+            />
+            <div *ngIf="skillForm.get('schedule')?.invalid && skillForm.get('schedule')?.touched"
+                class="text-red-500 text-sm mt-1">
+              <small *ngIf="skillForm.get('schedule')?.errors?.['required']">Schedule is required.</small>
+              <small *ngIf="skillForm.get('schedule')?.errors?.['maxlength']">Can be at most 100 characters.</small>
+              <small *ngIf="skillForm.get('schedule')?.errors?.['minlength']">Must be at least 5 characters.</small>
+            </div>
+          </div>
+
+        <!-- Buttons -->
+          <div class="flex flex-col sm:flex-row sm:justify-between gap-4">
+            <button
+              type="submit"
+              (click)="onSubmit()"
+              class="btn btn-primary px-6 py-3 rounded shadow"
+            >
+              Save Changes
+            </button>
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-2">
+              <button
+                type="button"
+                class="btn btn-secondary px-6 py-3 rounded shadow"
+                (click)="cancelEdit()"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="btn-danger px-6 py-3 rounded shadow text-white"
+                (click)="onDelete()"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>

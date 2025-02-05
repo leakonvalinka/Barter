@@ -1,0 +1,49 @@
+<nav [(ngpPaginationPage)]="currentPage" (ngpPaginationPageChange)="pageChange.emit($event)" ngpPagination
+    [ngpPaginationPageCount]="totalPages" aria-label="Pagination Navigation">
+    <ul class="flex items-center gap-0.5 sm:gap-1">
+        <!-- First/Previous buttons only shown on larger screens -->
+        <li class="hidden sm:block">
+            <a ngpPaginationFirst aria-label="First Page"
+                class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 cursor-pointer">
+                <ng-icon name="heroChevronDoubleLeft" class="w-4 h-4 sm:w-5 sm:h-5" />
+            </a>
+        </li>
+
+        <li>
+            <a ngpPaginationPrevious aria-label="Previous Page"
+                class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 cursor-pointer">
+                <ng-icon name="heroChevronLeft" class="w-4 h-4 sm:w-5 sm:h-5" />
+            </a>
+        </li>
+
+        @for (pageNum of totalPages | paginationRange : currentPage; track pageNum) {
+        @if (pageNum === '...') {
+        <li class="flex items-center justify-center w-6 h-8 sm:w-8 sm:h-10 text-sm sm:text-base">...</li>
+        } @else {
+        <li>
+            <a ngpPaginationButton [ngpPaginationButtonPage]="pageNum"
+                class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 text-sm sm:text-base cursor-pointer pagination-item"
+                [class.bg-purple-100]="currentPage === pageNum" [class.text-purple-700]="currentPage === pageNum"
+                [class.font-semibold]="currentPage === pageNum">
+                {{pageNum}}
+            </a>
+        </li>
+        }
+        }
+
+        <li>
+            <a ngpPaginationNext aria-label="Next Page"
+                class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 cursor-pointer">
+                <ng-icon name="heroChevronRight" class="w-4 h-4 sm:w-5 sm:h-5" />
+            </a>
+        </li>
+
+        <!-- Last page button only shown on larger screens -->
+        <li class="hidden sm:block">
+            <a ngpPaginationLast aria-label="Last Page"
+                class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 cursor-pointer">
+                <ng-icon name="heroChevronDoubleRight" class="w-4 h-4 sm:w-5 sm:h-5" />
+            </a>
+        </li>
+    </ul>
+</nav>

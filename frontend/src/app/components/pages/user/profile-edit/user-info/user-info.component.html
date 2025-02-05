@@ -1,0 +1,104 @@
+<form [formGroup]="profileForm" class="mb-3">
+  <div class="card lg:p-8">
+    <!-- Profile Section -->
+    <div class="flex flex-col md:flex-row lg:items-start gap-8 lg:max-w-4xl">
+      <!-- Profile Picture Section -->
+      <div class="flex flex-col justify-start min-w-48 items-center">
+        <img [src]="profilePicturePath" class="w-44 h-44 rounded-full object-cover shadow-md mb-4"
+          alt="Profile Picture">
+        <label for="fileInput" class="btn btn-secondary w-fit hover:opacity-90 transition-opacity">
+          <i class="material-icons-outlined mr-1">upload</i> Upload picture
+        </label>
+        <input id="fileInput" type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
+        <button type="button" class="btn btn-danger !mt-2 hover:opacity-90 transition-opacity"
+          (click)="removeProfilePicture()">
+          <i class="material-icons-outlined mr-1">delete</i> Remove picture
+        </button>
+      </div>
+
+      <!-- Form Fields -->
+      <div class="flex flex-col w-full gap-6">
+        <!-- Display Name -->
+        <div class="form-group">
+          <label for="displayName" class="text-sm font-medium mb-1">Display Name</label>
+          <input id="displayName" formControlName="displayName"
+            class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+            placeholder="Max M." />
+          <div *ngIf="profileForm.get('displayName')?.invalid && profileForm.get('displayName')?.touched"
+            class="text-red-500 text-sm mt-1">
+          </div>
+        </div>
+
+        <!-- Address Section -->
+        <div class="relative">
+          <h3 class="font-medium">Address Information</h3>
+          <small>Only you can see your address and exact location.</small>
+
+          <div class="mt-2">
+            <label for="addressInput" class="text-sm font-medium mb-1">Address</label>
+            <input id="addressInput" #addressInput formControlName="addressInput"
+              class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300"
+              placeholder="Start typing your address..." autocomplete="off" />
+
+            <!-- Address Suggestions Dropdown -->
+            <div *ngIf="addressSuggestions.length > 0"
+              class="absolute z-10 w-full bg-white mt-1 rounded-md shadow-lg border border-gray-200 max-h-60 overflow-y-auto">
+              <div *ngFor="let suggestion of addressSuggestions" class="address-suggestion p-2 hover:bg-gray-100 cursor-pointer"
+                (click)="onAddressSelected(suggestion)">
+                <div class="text-sm">{{ suggestion.description }}</div>
+                <div class="text-xs text-gray-500">{{ suggestion.structured_formatting.secondary_text }}
+                </div>
+              </div>
+            </div>
+
+            <div
+              *ngIf="(profileForm.get('addressInput')?.invalid || profileForm.get('location')?.invalid) && profileForm.get('addressInput')?.touched"
+              class="text-red-500 text-sm mt-1 flex flex-col">
+              <small *ngIf="profileForm.get('addressInput')?.errors?.['required']">Address is
+                required.</small>
+
+              <small *ngIf="profileForm.get('location')?.errors?.['address']">Address is
+                incomplete.</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="form-group">
+          <label for="bio" class="text-sm font-medium mb-1">Bio</label>
+          <textarea id="bio" formControlName="bio" rows="3"
+            class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 resize-none"
+            placeholder="Excited to connect with people and share my skills!"></textarea>
+          <div *ngIf="profileForm.get('bio')?.invalid && profileForm.get('bio')?.touched"
+            class="text-red-500 text-sm mt-1">
+            <small *ngIf="profileForm.get('bio')?.errors?.['maxlength']">Bio cannot exceed 100
+              characters.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- Map Preview -->
+<app-map [locations]="mapLocations" [center]="mapCenter" height="400px" class="mb-4">
+  <ng-template #headerTemplate>
+    <div class="pt-3 px-3">
+      <h2 class="text-xl font-semibold mb-4">Location Preview</h2>
+      <p class="text-sm text-gray-600 mb-4">This is where your location will appear on the map. Make sure it's
+        accurate!</p>
+    </div>
+  </ng-template>
+</app-map>
+
+<!-- Action Buttons -->
+<div class="flex gap-4 justify-end mt-4">
+  <button *ngIf="buttonConfig().cancel?.show" type="button"
+    [class]="'btn ' + (buttonConfig().cancel?.class || 'btn-secondary')" (click)="onCancel()">
+    {{ buttonConfig().cancel?.text || 'Cancel' }}
+  </button>
+  <button (click)="onSubmit()" *ngIf="buttonConfig().submit?.show" type="submit"
+    [class]="'btn ' + (buttonConfig().submit?.class || 'btn-primary')" [disabled]="!profileForm.valid">
+    {{ buttonConfig().submit?.text || 'Save Changes' }}
+  </button>
+</div>

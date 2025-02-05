@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: 24ws-ase-pr-inso-02
+  labels:
+    app: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672  # RabbitMQ default port
+        - containerPort: 15672  # RabbitMQ management UI port
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "10m"
+            ephemeral-storage: "100Mi"
+          limits:
+            memory: "400Mi"
+            cpu: "350m"
+            ephemeral-storage: "250Mi"
+        envFrom:
+          - secretRef:
+              name: rabbitmq-secret
+          - configMapRef:
+              name: rabbitmq-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: 24ws-ase-pr-inso-02
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - port: 5672
+      targetPort: 5672
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-ui
+  namespace: 24ws-ase-pr-inso-02
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - port: 15672
+      targetPort: 15672
+      protocol: TCP
+

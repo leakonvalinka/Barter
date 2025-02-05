@@ -1,0 +1,65 @@
+<div *ngIf="this.showRatingForm" class="max-w-3xl w-full p-8 rounded-2xl bg-white flex flex-col sm:items-start items-center">
+  <h2 class="text-3xl font-bold mb-5 text-center sm:text-left">Rate Your Experience</h2>
+   
+  <form [formGroup]="ratingForm" (ngSubmit)="onSubmit()" class="w-full">
+    <!-- Star Rating -->
+    <div class="mb-6 w-full">
+      <div class="star-rating flex gap-2 justify-center sm:justify-start">
+        <span
+          *ngFor="let star of [1, 2, 3, 4, 5]"
+          class="star text-2xl cursor-pointer"
+          [class.filled]="star <= (hoverRating || currentRating)"
+          [class.half]="star - 0.5 === (hoverRating || currentRating)"
+          (mouseenter)="setHoverRating(star, $event)"
+          (mousemove)="setHoverRating(star, $event)"
+          (mouseleave)="hoverRating = 0"
+          (click)="setRating(star, $event)">
+          ★
+        </span>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="mb-6 w-full">
+      <label for="title" class="block text-lg font-bold text-gray-800 mb-2">Review Title</label>
+      <input
+        id="title"
+        type="text"
+        formControlName="title"
+        placeholder="Enter a title for your review..."
+        maxlength="100"
+        class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+      >
+    </div>
+
+    <!-- Review -->
+    <div class="mb-6 w-full">
+      <label for="review" class="block text-lg font-bold text-gray-800 mb-2">Review (Optional)</label>
+      <textarea
+        id="review"
+        formControlName="review"
+        placeholder="Share your experience..."
+        maxlength="500"
+        rows="4"
+        class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500">
+      </textarea>
+      <div class="text-right text-sm text-gray-500 mt-1">
+        {{ratingForm.get('review')?.value?.length || 0}}/500
+      </div>
+    </div>
+
+    <div class="text-red-500 text-sm mb-3" *ngIf="isSubmitted && !isValid()">
+      Please provide a rating before submitting.
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex flex-col sm:flex-row sm:justify-start gap-4">
+      <button
+        type="submit"
+        class="btn btn-secondary px-6 py-3 rounded shadow"
+        [disabled]="!isValid()">
+        Submit Review
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,106 @@
+<div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl mx-auto">
+  <!-- Header Section -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-purple-600">Edit Exchange</h1>
+    <!--button
+      class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+      (click)="openSkillSelector()"
+    >
+      Edit Skills
+    </button-->
+  </div>
+
+  <!-- Skills Section -->
+  <div class="grid grid-cols-2 gap-6">
+    <!-- Skeleton Loading -->
+    <div *ngIf="isLoading()" class="space-y-2">
+
+    </div>
+    <!-- Their Skills -->
+    <div *ngIf="!isLoading()">
+      <h3 class="text-lg font-medium mb-3 text-center">Their Skills</h3>
+      <div
+        class="border-2 border-gray-300 rounded-lg p-4 min-h-[150px] max-h-[250px] overflow-y-auto"
+      >
+        <!-- Selected Skills -->
+        <div class="font-medium text-gray-700 mb-4">
+          <strong>Selected Skills:</strong>
+          <ul class="space-y-2 mt-2">
+            <li
+              *ngFor="let skill of selectedTheirSkills"
+              class="cursor-pointer flex justify-between items-center text-sm p-2 bg-purple-100 rounded"
+              (click)="deselectTheirSkill(skill)"
+            >
+              {{ skill.title }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Available Skills -->
+        <hr class="my-4">
+        <strong>Available Skills:</strong>
+        <ul class="space-y-2 mt-2">
+          <li
+            *ngFor="let skill of theirSkills"
+            class="cursor-pointer text-sm p-2 bg-gray-100 rounded hover:bg-gray-200 transition"
+            (click)="selectTheirSkill(skill)"
+          >
+            {{ skill.title }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Your Skills -->
+    <div>
+      <h3 class="text-lg font-medium mb-3 text-center">Your Skills</h3>
+      <div
+        class="border-2 border-gray-300 rounded-lg p-4 min-h-[150px] max-h-[250px] overflow-y-auto"
+      >
+        <!-- Selected Skills -->
+        <div class="font-medium text-gray-700 mb-4">
+          <strong>Selected Skills:</strong>
+          <ul class="space-y-2 mt-2">
+            <li
+              *ngFor="let skill of selectedYourSkills"
+              class="cursor-pointer flex justify-between items-center text-sm p-2 bg-blue-100 rounded"
+              (click)="deselectYourSkill(skill)"
+            >
+              {{ skill.title }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Available Skills -->
+        <hr class="my-4">
+        <strong>Available Skills:</strong>
+        <ul class="space-y-2 mt-2">
+          <li
+            *ngFor="let skill of yourSkills"
+            class="cursor-pointer text-sm p-2 bg-gray-100 rounded hover:bg-gray-200 transition"
+            (click)="selectYourSkill(skill)"
+          >
+            {{ skill.title }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Buttons -->
+  <div class="flex flex-row justify-between gap-4 mt-8">
+    <button
+      class="btn btn-secondary hover:opacity-90 transition-opacity"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      class="btn btn-primary"
+      [disabled]="(!selectedYourSkills.length && !selectedTheirSkills.length) || !exchangeChanged"
+      (click)="confirmExchange()"
+    >
+      Confirm Changes
+    </button>
+  </div>
+</div>

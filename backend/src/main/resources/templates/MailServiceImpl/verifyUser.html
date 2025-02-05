@@ -1,0 +1,19 @@
+{@at.ac.ase.inso.group02.entities.User user}
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Barter Account Verification</title>
+</head>
+
+<body>
+<h1>Welcome to Barter!</h1>
+<p> Hello {user.displayName}</p>
+<p> You received this email because an account was created at {baseUrl} with your email address.</p>
+<p> Please enter this code: <em>{verificationCode}</em></p>
+<p> or go to the link below to verify your account.</p>
+<p><a href="{verifyUrl}?verificationCode={verificationCode}&email={user.email}" target="_blank">Verify account</a></p>
+<p>Before you start using Barter, please take a moment to review our <a href="{baseUrl}/guidelines">community guidelines</a> to ensure a great experience for everyone.</p>
+</body>
+
+</html>

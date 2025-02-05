@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: 24ws-ase-pr-inso-02
+spec: {}
+status: {}

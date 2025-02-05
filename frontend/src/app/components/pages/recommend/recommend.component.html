@@ -1,0 +1,452 @@
+<!-- Main Container -->
+<div class="lg:min-h-full ml-8 mr-8">
+  <!-- Step Progress Indicator -->
+  <div class="container mx-auto mt-4 lg:mt-12 lg:mb-8">
+    <div class="flex flex-col sm:flex-row sm:justify-center items-center sm:space-x-4 space-y-3 sm:space-y-0">
+      <div class="flex items-center hover:cursor-pointer" (click)="goBack()">
+        <div
+          [class]="'rounded-full w-10 h-10 flex items-center justify-center ' + (currentStep === 1 ? 'bg-lighter-highlight' : 'bg-gray-200')">
+          1
+        </div>
+        <span class="ml-2 text-sm">Select Demand</span>
+      </div>
+      <div class="w-16 h-0.5 bg-gray-200 hidden sm:block"></div>
+      <div class="flex items-center">
+        <div
+          [class]="'rounded-full w-10 h-10 flex items-center justify-center ' + (currentStep === 2 ? 'bg-lighter-highlight' : 'bg-gray-200')">
+          2
+        </div>
+        <span class="ml-2 text-sm">View Matches</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demand Selection View -->
+  <div *ngIf="currentStep === 1" class="container mx-auto">
+    <!-- Desktop View - Vertical Stack -->
+    @if (isLoading) {
+      <div class="hidden lg:flex lg:flex-col lg:space-y-4 lg:items-center">
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="w-full max-w-3xl">
+            <div
+              class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 cursor-pointer">
+              <div class="flex items-start space-x-4">
+                <app-skeleton width="3rem" height="3rem" borderRadius="999px"></app-skeleton>
+                <div class="flex flex-col flex-1 space-y-2">
+                  <app-skeleton width="50px" height="15px"></app-skeleton>
+                  <app-skeleton width="100px" height="1.5rem"></app-skeleton>
+                  <app-skeleton width="150px" height="1rem"></app-skeleton>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Mobile view -->
+      <div class="lg:hidden mt-20">
+        <swiper-container
+          class="w-full h-[70vh]"
+          pagination="true"
+          pagination-clickable="true"
+          keyboard="true"
+          mousewheel="true"
+          slides-per-view="1"
+          space-between="20">
+          @for (i of [1, 2, 3]; track i) {
+            <swiper-slide>
+              <div class="h-full p-4  flex items-center">
+                <div class="bg-white rounded-xl shadow-lg p-6 w-full">
+                  <div class="text-center flex flex-col items-center space-y-3">
+                    <app-skeleton width="5rem" height="5rem" borderRadius="999px"></app-skeleton>
+                    <app-skeleton width="100px" height="2rem"></app-skeleton>
+                    <app-skeleton width="150px" height="1.5rem"></app-skeleton>
+                    <app-skeleton width="50px" height="20px"></app-skeleton>
+                    <button class="mt-4 w-full py-2 rounded-lg primary" disabled>
+                      Select This Demand
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </swiper-slide>
+          }
+        </swiper-container>
+      </div>
+    } @else {
+      <!-- If user has no demands -->
+      <div *ngIf="this.noDemandsCreated"
+           class="container mx-auto px-4 mt-20">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto text-center">
+          <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold mb-3">No Demands Found</h2>
+          <p class="text-secondary mb-6">You haven't created any demands yet. Start by creating your first demand.</p>
+          <button routerLink="/demands" class="px-6 py-3 rounded-lg primary">
+            Create New Demand
+          </button>
+        </div>
+      </div>
+
+      <!-- If user has no demands without an ongoing exchange-->
+      <div *ngIf="this.noDemandsWithoutExchange"
+           class="container mx-auto px-4 mt-20">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto text-center">
+          <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold mb-3">All Demands Are Matched</h2>
+          <p class="text-secondary mb-6">All your current demands are already in active exchanges. Create a new demand to find more matches.</p>
+          <button routerLink="/demands" class="px-6 py-3 rounded-lg primary">
+            Create New Demand
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!this.noDemandsWithoutExchange && !this.noDemandsCreated" class="hidden lg:flex lg:flex-col lg:space-y-4 lg:items-center">
+        <div *ngFor="let demand of demands" class="w-full max-w-3xl">
+          <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 p-6 cursor-pointer border border-gray-100"
+               (click)="onItemSelect(demand)">
+            <div class="flex items-start space-x-4">
+              <img [src]="getProfileImageUrl(currentUser?.profilePicture)"
+                   class="w-12 h-12 rounded-full object-cover" alt="Profile">
+              <div class="flex-1">
+                <div class="flex items-center">
+                  <span class="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">
+                  {{ demand.category.name }}
+                  </span>
+                </div>
+                <p class="demand-title text-xl font-semibold my-2">{{ demand.title }}</p>
+                <p class="text-secondary">{{ demand.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile View - Swiper -->
+      <div class="lg:hidden" *ngIf="!this.noDemandsWithoutExchange && !this.noDemandsCreated">
+        <swiper-container
+          class="w-full h-[70vh]"
+          pagination="true"
+          pagination-clickable="true"
+          keyboard="true"
+          mousewheel="true"
+          slides-per-view="1"
+          space-between="20">
+          <swiper-slide *ngFor="let demand of demands">
+            <div class="h-full p-4 flex items-center">
+              <div class="bg-white rounded-xl shadow-lg p-6 w-full">
+                <div class="text-center">
+                  <img [src]="getProfileImageUrl(currentUser?.profilePicture)"
+                       class="w-20 h-20 rounded-full mx-auto mb-4 object-cover" alt="Profile">
+                  <h3 class="demand-title text-xl font-semibold mb-2">{{ demand.title }}</h3>
+                  <p class="text-secondary mb-4">{{ demand.description }}</p>
+                  <span class="px-3 py-1 rounded-full text-sm">
+                    {{ demand.category.name }}
+                  </span>
+                  <button (click)="onItemSelect(demand)"
+                          class="mt-4 w-full py-2 rounded-lg primary">
+                    Select This Demand
+                  </button>
+                </div>
+              </div>
+            </div>
+          </swiper-slide>
+        </swiper-container>
+      </div>
+    }
+  </div>
+
+  @if (isLoading) {
+    <!-- Recommendations View -->
+    <div *ngIf="currentStep === 2" class="container mx-auto flex flex-col h-[calc(100vh-12rem)]">
+
+      <!-- Desktop/Tablet Recommendations Skeleton -->
+      <div *ngIf="isLoading" class="hidden lg:flex lg:items-center lg:justify-center h-full">
+        <!-- 3x3 Grid for Extra Large Screens (1536px and up) -->
+        <div class="hidden 2xl:grid 2xl:grid-cols-3 2xl:grid-rows-3 gap-8 w-full h-4/5">
+          @for (i of [1,2,3,4,5,6,7,8,9]; track i) {
+            <div class="p-4">
+              <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-start space-x-4">
+                  <app-skeleton width="3rem" height="3rem" borderRadius="999px"></app-skeleton>
+                  <div class="flex-1 space-y-3">
+                    <app-skeleton width="80px" height="24px" borderRadius="9999px"></app-skeleton>
+                    <app-skeleton width="200px" height="28px"></app-skeleton>
+                    <app-skeleton width="100%" height="40px"></app-skeleton>
+                    <div class="flex justify-end">
+                      <app-skeleton width="120px" height="20px"></app-skeleton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- 2x3 Grid for Large Screens (1280px - 1536px) -->
+        <div class="hidden xl:grid 2xl:hidden xl:grid-cols-2 xl:grid-rows-3 gap-6 w-full h-4/5">
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="p-4">
+              <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-start space-x-4">
+                  <app-skeleton width="3rem" height="3rem" borderRadius="999px"></app-skeleton>
+                  <div class="flex-1 space-y-3">
+                    <app-skeleton width="80px" height="24px" borderRadius="9999px"></app-skeleton>
+                    <app-skeleton width="200px" height="28px"></app-skeleton>
+                    <app-skeleton width="100%" height="40px"></app-skeleton>
+                    <div class="flex justify-end">
+                      <app-skeleton width="120px" height="20px"></app-skeleton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- 2x2 Grid for Medium-Large Screens (1024px - 1280px) -->
+        <div class="hidden lg:grid xl:hidden lg:grid-cols-2 lg:grid-rows-2 gap-6 w-full h-4/5">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="p-4">
+              <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-start space-x-4">
+                  <app-skeleton width="3rem" height="3rem" borderRadius="999px"></app-skeleton>
+                  <div class="flex-1 space-y-3">
+                    <app-skeleton width="80px" height="24px" borderRadius="9999px"></app-skeleton>
+                    <app-skeleton width="200px" height="28px"></app-skeleton>
+                    <app-skeleton width="100%" height="40px"></app-skeleton>
+                    <div class="flex justify-end">
+                      <app-skeleton width="120px" height="20px"></app-skeleton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Mobile Recommendations Skeleton -->
+      <div *ngIf="isLoading" class="lg:hidden flex justify-center items-center h-full">
+        <div class="w-[90%] max-w-sm">
+          <div class="bg-white rounded-xl shadow-lg p-6 w-full">
+            <div class="flex flex-col items-center space-y-4">
+              <app-skeleton width="5rem" height="5rem" borderRadius="999px"></app-skeleton>
+              <app-skeleton width="200px" height="28px"></app-skeleton>
+              <app-skeleton width="100%" height="60px"></app-skeleton>
+              <app-skeleton width="100px" height="24px" borderRadius="9999px"></app-skeleton>
+              <app-skeleton width="150px" height="20px"></app-skeleton>
+              <app-skeleton width="100%" height="40px" borderRadius="8px"></app-skeleton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Recommendations View -->
+    <div *ngIf="currentStep === 2" class="container mx-auto flex flex-col h-[calc(100vh-12rem)]">
+      <!--
+        <div class="flex justify-between items-center mb-8">
+          <button (click)="goBack()"
+                  class="flex items-center secondary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Back to Demands
+          </button>
+          <div class="w-24"></div>
+        </div>
+        -->
+
+
+
+      <!-- No Recommendations State -->
+      <div *ngIf="swipeItems.length === 0" class="container mx-auto px-4 h-full flex items-center justify-center mt-20">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto text-center">
+          <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold mb-3">No Recommendations Found</h2>
+          <p class="text-secondary mb-6">We couldn't find suitable offers for your demand at the moment. Please check back later or try with a different demand.</p>
+          <button (click)="goBack()" class="px-6 py-3 rounded-lg primary">
+            Select Different Demand
+          </button>
+        </div>
+      </div>
+
+    <!-- Desktop/Tablet Recommendations -->
+    <div *ngIf="swipeItems.length > 0" class="hidden lg:flex lg:items-center lg:justify-center h-full">
+      <!-- 3x3 Grid for Extra Large Screens (1536px and up) -->
+      <swiper-container
+        pagination="true"
+        pagination-clickable="true"
+        keyboard="true"
+        mousewheel="true"
+        slides-per-view="3"
+        grid-rows="3"
+        grid-fill="row"
+        space-between="30"
+        class="hidden 2xl:block w-full h-4/5 pb-8">
+        <swiper-slide *ngFor="let offer of swipeItems">
+          <div class="p-4">
+            <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer border border-gray-100 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
+                 (click)="onMatchClick(offer)">
+              <div class="flex items-start space-x-4">
+                <img [src]="getProfileImageUrl(offer.byUser.profilePicture)"
+                     class="w-12 h-12 rounded-full object-cover" alt="Profile">
+                <div class="flex-1 space-y-2">
+                  <span class="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">
+                    {{ getCategoryNameById(offer.category.id) }}
+                  </span>
+                  <p class="offer-title text-xl font-semibold">{{ offer.title }}</p>
+                  <p class="text-secondary">{{ offer.description }}</p>
+                  <div class="flex items-center justify-end">
+                    <span class="text-sm text-secondary">
+                      By &commat;{{ offer.byUser.username }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+
+      <!-- 2x3 Grid for Large Screens (1280px - 1536px) -->
+      <swiper-container
+        pagination="true"
+        pagination-clickable="true"
+        keyboard="true"
+        mousewheel="true"
+        slides-per-view="2"
+        grid-rows="3"
+        grid-fill="row"
+        space-between="20"
+        class="hidden xl:block 2xl:hidden w-full h-4/5">
+        <swiper-slide *ngFor="let offer of swipeItems">
+          <div class="p-4">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 hover:-translate-y-1 p-6 cursor-pointer"
+                 (click)="onMatchClick(offer)">
+              <div class="flex items-start space-x-4">
+                <img [src]="getProfileImageUrl(offer.byUser.profilePicture)"
+                     class="w-12 h-12 rounded-full object-cover" alt="Profile">
+                <div class="flex-1 space-y-2">
+                  <span class="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">
+                    {{ getCategoryNameById(offer.category.id) }}
+                  </span>
+                  <p class="offer-title text-xl font-semibold">{{ offer.title }}</p>
+                  <p class="text-secondary">{{ offer.description }}</p>
+                  <div class="flex items-center justify-end">
+                    <span class="text-sm text-secondary">
+                      By &commat;{{ offer.byUser.username }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+
+      <!-- 2x2 Grid for Medium-Large Screens (1024px - 1280px) -->
+      <swiper-container
+        pagination="true"
+        pagination-clickable="true"
+        keyboard="true"
+        mousewheel="true"
+        slides-per-view="2"
+        grid-rows="2"
+        grid-fill="row"
+        space-between="20"
+        class="hidden lg:block xl:hidden w-full h-4/5">
+        <swiper-slide *ngFor="let offer of swipeItems">
+          <div class="p-4">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 hover:-translate-y-1 p-6 cursor-pointer"
+                 (click)="onMatchClick(offer)">
+              <div class="flex items-start space-x-4">
+                <img [src]="getProfileImageUrl(offer.byUser.profilePicture)"
+                     class="w-12 h-12 rounded-full object-cover" alt="Profile">
+                <div class="flex-1">
+                  <span class="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">
+						        {{ getCategoryNameById(offer.category.id) }}
+					        </span>
+                  <p class="offer-title text-xl font-semibold mb-2">{{ offer.title }}</p>
+                  <p class="text-secondary mb-4">{{ offer.description }}</p>
+                  <div class="flex items-center justify-end">
+                    <span class="text-sm text-secondary">
+						          By &comma;{{ offer.byUser.username }}
+					          </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+    </div>
+
+      <!-- Mobile Recommendations -->
+      <div class="lg:hidden flex justify-center items-center h-full">
+        <swiper-container
+          class="w-[90%] max-w-sm h-auto"
+          effect="cards"
+          grab-cursor="true">
+          <swiper-slide *ngFor="let offer of swipeItems" class="!h-auto rounded-xl">
+            <div class="bg-white rounded-xl shadow-lg p-6 w-full">
+              <div class="text-center">
+                <img [src]="getProfileImageUrl(offer.byUser.profilePicture)"
+                    class="w-20 h-20 rounded-full mx-auto mb-4 object-cover" alt="Profile">
+                <h3 class="offer-title text-xl font-semibold mb-2">{{ offer.title }}</h3>
+                <p class="text-secondary mb-4">{{ offer.description }}</p>
+                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                    {{ getCategoryNameById(offer.category.id) }}
+                  </span>
+                <p class="mt-2 text-sm text-secondary">By &commat;{{ offer.byUser.username }}</p>
+                <button (click)="onMatchClick(offer)"
+                        class="mt-4 w-full py-2 rounded-lg primary">
+                  Match with This Offer
+                </button>
+              </div>
+            </div>
+          </swiper-slide>
+        </swiper-container>
+      </div>
+
+      <!-- Match Confirmation Modal -->
+      <div *ngIf="isMatchModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 transform transition-all">
+          <div class="text-center">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-10 h-10 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold mb-4">Perfect Match!</h2>
+            <p class="text-secondary mb-6">Would you like to start a conversation
+              with {{ this.matchedItem?.byUser?.displayName }}?</p>
+
+            <div class="flex space-x-4 justify-center">
+              <button (click)="continueBrowsing()"
+                      class="px-6 py-2 rounded-lg secondary">
+                Continue Browsing
+              </button>
+              <button (click)="goToChat()"
+                      class="px-6 py-2 rounded-lg primary">
+                Start Chat
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,82 @@
+<div class="flex flex-col gap-4 lg:gap-8">
+  <form [formGroup]="offerForm" (ngSubmit)="onSubmit($event)">
+    <ng-content select="[title]"></ng-content>
+
+    <!-- Form Fields -->
+    <div class="flex flex-col gap-4 min-w-md">
+
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title" class="text-sm font-medium mb-1">Title</label>
+        <input id="title" formControlName="title"
+          class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+          placeholder="Guitar lessons" />
+        <div *ngIf="offerForm.get('title')?.invalid && offerForm.get('title')?.touched"
+          class="text-red-500 text-sm mt-1">
+          <small *ngIf="offerForm.get('title')?.errors?.['required']">Title is required.</small>
+          <small *ngIf="offerForm.get('title')?.errors?.['maxlength']">Can be at most 100 characters.</small>
+          <small *ngIf="offerForm.get('title')?.errors?.['minlength']">Must be at least 5 characters.</small>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description" class="text-sm font-medium mb-1">Description</label>
+        <textarea id="description" formControlName="description"
+          class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+          placeholder="I offer acoustic guitar lessons for a beginner"></textarea>
+        <div class="flex justify-end mt-1">
+          <small class="text-gray-500">
+            {{ offerForm.get('description')?.value?.length || 0 }}/200
+          </small>
+        </div>
+        <div *ngIf="offerForm.get('description')?.invalid && offerForm.get('description')?.touched"
+          class="text-red-500 text-sm mt-1">
+          <small *ngIf="offerForm.get('description')?.errors?.['required']">Description is required.</small>
+          <small *ngIf="offerForm.get('description')?.errors?.['maxlength']">Can be at most 200 characters.</small>
+          <small *ngIf="offerForm.get('description')?.errors?.['minlength']">Must be at least 10 characters.</small>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category" class="text-sm font-medium mb-1">Category</label>
+        <select id="category" formControlName="category"
+          class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500">
+          <option *ngFor="let category of categories()" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+        <div *ngIf="offerForm.get('category')?.invalid && offerForm.get('category')?.touched"
+          class="text-red-500 text-sm mt-1">
+          <small *ngIf="offerForm.get('category')?.errors?.['required']">Category is required.</small>
+        </div>
+      </div>
+
+      <!-- Schedule -->
+      <div class="form-group">
+        <label for="schedule" class="text-sm font-medium mb-1">Schedule</label>
+        <input id="schedule" formControlName="schedule"
+          class="w-full p-2 rounded border focus:ring-2 focus:ring-primary-300 focus:border-primary-500"
+          placeholder="Evenings during weekdays" />
+        <div *ngIf="offerForm.get('schedule')?.invalid && offerForm.get('schedule')?.touched"
+          class="text-red-500 text-sm mt-1">
+          <small *ngIf="offerForm.get('schedule')?.errors?.['required']">Schedule is required.</small>
+          <small *ngIf="offerForm.get('schedule')?.errors?.['maxlength']">Can be at most 100 characters.</small>
+          <small *ngIf="offerForm.get('schedule')?.errors?.['minlength']">Must be at least 5 characters.</small>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-row justify-between gap-4 mt-8">
+      <button class="btn btn-secondary hover:opacity-90 transition-opacity" (click)="onCancel()">
+        <!-- <i class="material-icons-outlined mr-1">close</i> <ng-content select="cancelText">Cancel</ng-content> -->
+        <ng-content select="cancelBtnContent">
+          <i class="material-icons-outlined mr-1">close</i> Cancel
+        </ng-content>
+      </button>
+      <button [disabled]="offerForm.invalid" type="submit" class="btn btn-primary">
+        <ng-content select="submitBtnContent"><i class="material-icons-outlined mr-1">add_circle</i> Create</ng-content>
+      </button>
+    </div>
+  </form>
+</div>

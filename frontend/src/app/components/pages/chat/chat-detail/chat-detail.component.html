@@ -1,0 +1,125 @@
+<div class="messages-background flex flex-col h-screen lg:mb-0 bg-gray-50">
+  <!-- Header -->
+  <div *ngFor="let user of participants"
+    class="flex items-center gap-3 border-b px-4 py-3 bg-white shadow-sm fixed top-0 z-50 chat-header">
+    <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-300" (click)="navigateToProfile(user.username)">
+      <img [src]="user.profilePicture" alt="User profile" class="cursor-pointer w-12 h-12 rounded-full" />
+    </div>
+    <div (click)="navigateToProfile(user.username)">
+      <h1 class="cursor-pointer text-lg font-semibold">{{ user.displayName ? user.displayName : user.username }}</h1>
+    </div>
+
+    <!-- Custom Dropdown -->
+    <div class="custom-dropdown flex rounded-full lg:rounded-md lg:p-3 lg:px-4 lg:py-2 ml-auto">
+      <div class="menu-wrap">
+        <input type="checkbox" class="toggler" />
+        <div class="dots">
+          <div></div>
+        </div>
+        <div class="menu">
+          <div>
+            <ul>
+              <li>
+                <button [ngpDialogTrigger]="dialog" (click)="dialogState = 'exchange'" class="dropdown-button">
+                  <i class="material-icons-outlined">swap_horiz</i>
+                  <span>View Exchange</span>
+                </button>
+                <button (click)="openRatingDialog()" class="dropdown-button">
+                  <i class="material-icons-outlined h-5 w-5">star_rate_half</i>
+                  <span>Rate Exchange</span>
+                </button>
+                <button (click)="openReportDialog()" class="dropdown-button">
+                  <i class="material-icons-outlined h-5 w-5">report</i>
+                  <span>Report User</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div #messagesContainer class="messages-container flex-1 space-y-4 overflow-y-auto overflow-x-hidden break-words p-4 mt-20"
+    (scroll)="onScroll($event)">
+    <div *ngIf="loadingButton" class="flex justify-center pb-4 z-10">
+      <button type="button" class="btn btn-secondary pb-4 rounded shadow" (click)="loadOlderMessages()">
+        {{ isLoading ? 'Loading...' : 'Load Previous Messages' }}
+      </button>
+    </div>
+    <div *ngFor="let message of this.messages.reverse()"
+         class="chat-message"
+         [ngClass]="{ 'self-end': isAuthor(message), 'self-start': !isAuthor(message) }">
+      <!-- Received Message -->
+      <div *ngIf="!isAuthor(message)"
+        class="max-w-xs bg-gray-200 text-gray-700 rounded-lg px-3 py-2 mb-2 whitespace-pre-wrap">{{ message.content }}
+        <span class="block text-xs text-right mt-1 text-gray-500">{{ message.timestamp | date:'d.M.yy, h:mm a' }}</span>
+      </div>
+      <!-- Sent Message -->
+      <div *ngIf="isAuthor(message)"
+        class="max-w-xs bg-blue-500 text-white rounded-lg px-3 py-2 mb-2 self-end whitespace-pre-wrap">{{
+        message.content }}
+        <span class="block text-xs text-right mt-1 text-blue-200">{{ message.timestamp | date:'d.M.yy, h:mm a' }}</span>
+      </div>
+    </div>
+  </div>
+
+<div *ngIf="isChatDisabled && showOverlay"
+     class="chat-disabled-overlay"
+     (click)="showOverlay = false">
+  <div class="overlay-message" (click)="$event.stopPropagation()">
+    <i class="material-icons-outlined text-4xl mb-2">check_circle</i>
+    <p>This exchange has been completed and rated.</p>
+    <p class="text-sm text-gray-600">Chat history is available for reference.</p>
+    <p class="text-sm text-gray-500 mt-4">Click outside to dismiss this message</p>
+  </div>
+</div>
+
+  <!-- Chat Input -->
+  <div class="chat-input-container flex items-center break-words gap-2 p-4 bg-white border-t fixed lg:static w-full">
+    <textarea
+      id="message-input"
+      [(ngModel)]="newMessage"
+      type="text"
+      placeholder="Type a message..."
+      maxlength="200"
+      rows="1"
+      class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[2.7rem] max-h-[10rem]"
+      (keydown)="handleKeyDown($event)">
+    </textarea>
+    <button
+      id="send-button"
+      (click)="handleSendMessage(newMessage); newMessage = ''"
+      [disabled]="newMessage.length <= 0"
+      class="p-2 bg-blue-500 disabled:bg-blue-300 text-white rounded-full hover:bg-blue-600 h-10 w-10">
+      <i class="material-icons-outlined">send</i>
+    </button>
+  </div>
+</div>
+
+<button #dialogTrigger [ngpDialogTrigger]="dialog" class="hidden"></button>
+
+<ng-template #dialog let-close="close">
+  <div ngpDialogOverlay class="fixed top-0 left-0 w-screen h-screen dialog-backdrop">
+    <div ngpDialog class="w-[90%] md:w-fit max-w-[90vw] h-fit fixed top-1/2 left-1/2 p-2 md:p-8 px-6 py-4 bg-white dialog-container">
+      <!-- Exchange Overview -->
+      <div *ngIf="dialogState === 'exchange'">
+        <app-exchange-overview
+          [exchangeId]="chatId"
+          (exchangeComplete)="handleExchangeComplete()"
+          (closeDialog)="close(); resetDialogState()">
+        </app-exchange-overview>
+      </div>
+
+      <!-- Rating Form -->
+      <div *ngIf="dialogState === 'rating'">
+        <app-rating
+          [exchangeId]="this.currentExchangeId"
+          [exchangeCompleted]="true"
+          (ratingSubmitted)="close(); resetDialogState()">
+        </app-rating>
+      </div>
+    </div>
+  </div>
+</ng-template>

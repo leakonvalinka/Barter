@@ -1,0 +1,24 @@
+<div class="flex flex-col gap-4 lg:gap-8 m-8 lg:mt-16 lg:mx-60">
+  <h1 class="text-3xl font-bold mb-3">Onboarding</h1>
+  @if (step() === "profile") {
+  <h2 class="text-2xl font-bold mb-3">Complete your Profile</h2>
+  <app-user-info [buttonConfig]="buttonConfig" (userInfoUpdate)="onUserInfoUpdate($event)"></app-user-info>
+
+  <!-- Overlay Message for offers -->
+  <div *ngIf="showOverlay" class="chat-disabled-overlay" (click)="showOverlay = false">
+    <div class="overlay-message mx-auto" (click)="$event.stopPropagation()">
+      <h1 class="text-2xl font-bold">Hi, nice to meet you!</h1>
+      <p>Please complete your Profile in order to start bartering</p>
+      <p>We are looking forward to bartering with you!</p>
+      <p class="text-sm text-gray-600"> </p>
+      <p class="text-sm text-gray-500 mt-4">Click outside to dismiss this message</p>
+    </div>
+  </div>
+  }
+  @else if (step() === "offers") {
+
+  <app-offer-step (back)="step.set('profile')" (finished)="finish()"></app-offer-step>
+
+
+  }
+</div>

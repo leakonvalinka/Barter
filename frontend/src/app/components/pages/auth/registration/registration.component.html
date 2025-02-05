@@ -1,0 +1,53 @@
+<div class="auth-container flex flex-col justify-center items-center min-h-screen">
+	<div class="absolute top-5 left-5 flex items-center">
+	  <img class="w-12 h-auto" src="logo/logo_purple_500x500.png" alt="logo">
+	  <span class="logo-text text-4xl font-bold">arter</span>
+	</div>
+  
+	<div class="form-container w-full max-w-md p-8 border-r-lg text-center">
+	  <h1 class="text-3xl font-bold mb-8">Sign up</h1>
+  
+	  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+		<div class="form-group">
+		  <input
+			type="email"
+			placeholder="Email address"
+			formControlName="email"
+		  />
+		  <small *ngIf="registrationForm?.get('email')?.invalid && (registrationForm?.get('email')?.dirty || registrationForm?.get('email')?.touched)">
+			Please enter a valid email address.
+		  </small>
+		</div>
+  
+		<div class="form-group">
+		  <input
+			type="password"
+			placeholder="Create a password"
+			formControlName="password"
+		  />
+		  <small *ngIf="registrationForm?.get('password')?.invalid && (registrationForm?.get('password')?.dirty || registrationForm?.get('password')?.touched)">
+			Password must be at least 8 characters, contain one uppercase, one lowercase, one number, and one special character.
+		  </small>
+		</div>
+  
+		<div class="form-group">
+		  <input
+			type="password"
+			placeholder="Repeat your password"
+			formControlName="passwordRepeat"
+		  />
+		  <small *ngIf="registrationForm?.errors?.['mismatch'] && (registrationForm?.get('passwordRepeat')?.dirty || registrationForm?.get('passwordRepeat')?.touched)">
+			The repeated password does not match your password.
+		  </small>
+		</div>
+  
+		<button type="submit" class="btn btn-primary w-full mt-8" [disabled]="registrationForm.invalid">
+		  Join the Community
+		</button>
+	  </form>
+  
+	  <div class="login-ref mt-16">
+		<p class=" text-sm ">Already have an account? <a routerLink="/login" class="font-bold no-underline">Login</a></p>
+	  </div>
+	</div>
+  </div>

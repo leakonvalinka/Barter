@@ -1,0 +1,166 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div
+    class="glass-card max-w-3xl min-h-[400px] w-full p-12 rounded-2xl bg-white shadow-md flex flex-col sm:items-start items-center">
+    @if (isLoading()) {
+      <!-- Skeleton Loader -->
+      <div class="w-full">
+        <!-- Heading Skeleton -->
+        <div class="mb-5 text-center sm:text-left">
+          <app-skeleton height="36px" width="200px"></app-skeleton>
+        </div>
+
+        <!-- Title Skeleton -->
+        <div class="mb-6 text-center sm:text-left">
+          <app-skeleton height="40px" width="80%"></app-skeleton>
+        </div>
+
+        <!-- User Information Skeleton -->
+        <div class="flex flex-col sm:flex-row sm:items-center mb-8 items-center">
+          <!-- Profile Picture Skeleton -->
+          <app-skeleton height="64px" width="64px" borderRadius="9999px" class="mb-4 sm:mb-0 sm:mr-6"></app-skeleton>
+
+          <div class="text-center sm:text-left space-y-2">
+            <!-- Username Skeleton -->
+            <app-skeleton height="28px" width="150px"></app-skeleton>
+            <!-- Rating Skeleton -->
+            <app-skeleton height="20px" width="120px"></app-skeleton>
+          </div>
+        </div>
+
+        <!-- Description Skeleton -->
+        <div class="mb-8 text-center sm:text-left space-y-2">
+          <app-skeleton height="24px" width="90%"></app-skeleton>
+          <app-skeleton height="24px" width="85%"></app-skeleton>
+          <app-skeleton height="24px" width="60%"></app-skeleton>
+        </div>
+
+        <!-- Category Skeleton -->
+        <div class="mb-6 text-center sm:text-left">
+          <app-skeleton height="28px" width="200px"></app-skeleton>
+        </div>
+
+        <!-- Schedule/Urgency Skeleton -->
+        <div class="mb-6 text-center sm:text-left">
+          <app-skeleton height="28px" width="180px"></app-skeleton>
+        </div>
+
+        <!-- Buttons Skeleton -->
+        <div class="flex flex-col sm:flex-row sm:justify-between gap-4">
+          <app-skeleton height="48px" width="150px"></app-skeleton>
+          <app-skeleton height="48px" width="150px"></app-skeleton>
+        </div>
+      </div>
+    } @else if (!skill) {
+      <!-- Skill Not Found State -->
+      <div class="w-full text-center">
+        <i class="material-icons-outlined text-gray-400 text-6xl mb-4">search_off</i>
+        <h1 class="text-2xl font-bold text-gray-800 mb-3">Skill Not Found</h1>
+        <p class="text-gray-600 mb-8">This skill does not exist or has been deleted.</p>
+        <button type="button" class="btn-secondary text-gray-800 px-6 py-3 rounded shadow hover:bg-gray-400" (click)="goToOverview()">
+          Back to Overview
+        </button>
+      </div>
+    } @else {
+      <!-- Dynamic Heading -->
+      <div class="flex flex-row justify-between w-full mb-2">
+        <div class="flex-grow">
+          <span class="inline-block px-3 py-1 text-s font-medium text-gray-600 bg-gray-100 rounded-full" id="skill-category">{{ skill.category.name }}</span>
+        </div>
+        <div class="hidden sm:block" *ngIf="!isOwner">
+          <button class="btn btn-icon btn-secondary btn-sm" (click)="openReportDialog()" title="Report Skill">
+            <i class="material-icons-outlined">flag</i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <h2 class="text-2xl sm:text-3xl text-gray-800 mb-6 text-center sm:text-left">
+        {{ skill.title }}
+      </h2>
+
+      <!-- User Information -->
+      <div class="flex flex-col sm:flex-row sm:items-center mb-8 items-center">
+        <img
+          [src]="user?.profilePicture ? (environment.apiBaseUrl + '/images/' + user?.profilePicture) : 'resources/profile_icon.png'"
+          alt="User profile" class="w-20 h-20 sm:w-16 sm:h-16 rounded-full mb-4 sm:mb-0 sm:mr-6" />
+        <div class="text-center sm:text-left">
+          <a [routerLink]="['/profile', user?.username]" class="text-highlight hover:underline text-lg" id="profile-link">
+            {{ user?.displayName }}
+          </a>
+
+          <!-- Location
+          <p class="flex items-center justify-center sm:justify-start text-sm text-gray-600 mt-2">
+            <i class="material-icons-outlined text-gray-500 mr-1">location_on</i>
+            {{ user.location.city }} {{ user.location.postalCode }}, {{ user.location.country }}
+          </p>
+          -->
+
+          <!-- Rating -->
+          <p class="flex items-center justify-center sm:justify-start text-sm text-gray-600 mt-2">
+            <i class="material-icons-outlined text-yellow-500 mr-1">star</i>
+            {{ rating.toFixed(1) }}/5 ({{ reviewAmount }} reviews)
+          </p>
+        </div>
+      </div>
+
+      <!-- Skill Description -->
+      <p class="text-base sm:text-lg text-gray-600 mb-8 text-center sm:text-left" id="skill-description">
+        {{ skill.description }}
+      </p>
+
+      <!-- Skill Type -->
+      <!-- <div class="mb-6 text-center sm:text-left" id="skill-category">
+        <span class="text-lg font-semibold text-gray-800">Category: </span>
+        <span class="inline-block px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">{{ skill.category.name }}</span>
+      </div> -->
+
+      <!-- Schedule -->
+      <div *ngIf="mode === SkillOfferDemandMode.offer && skill?.type === 'offer'" class="mb-6 text-center sm:text-left"
+        id="skill-availability">
+        <span class="text-lg font-semibold text-gray-800">Availability: </span>
+        <span class="text-lg text-highlight">{{ skill.schedule! }}</span>
+      </div>
+
+      <!-- Urgency Badge -->
+      <div *ngIf="mode === SkillOfferDemandMode.demand && skill?.type === 'demand'" class="mb-6 text-center sm:text-left"
+        id="skill-urgency">
+        <span class="text-lg font-semibold text-gray-800">Urgency: </span>
+        <span class="text-lg px-3 py-1 rounded-full" [ngClass]="{
+            'bg-gray-300 text-gray-900': urgency === DemandUrgency.NONE,
+            'bg-green-100 text-green-800': urgency === DemandUrgency.LOW,
+            'bg-yellow-100 text-yellow-800': urgency === DemandUrgency.MEDIUM,
+            'bg-orange-100 text-orange-800': urgency === DemandUrgency.HIGH,
+            'bg-red-100 text-red-800': urgency === DemandUrgency.CRITICAL
+          }">
+          {{ getUrgencyLabel(skill.urgency!) }}
+        </span>
+      </div>
+
+      <!-- Button Section -->
+      <div class="flex flex-col sm:flex-row sm:justify-between gap-4">
+        <!-- Edit Buttons -->
+        <button *ngIf="isOwner && showEditAndOverviewButtons" class="btn btn-primary w-full sm:w-auto text-center"
+          (click)="enableEditing()">
+          Edit Details
+        </button>
+
+        <!-- Message Button -->
+        <button *ngIf="!isOwner && showEditAndOverviewButtons"
+          class="btn btn-primary text-white px-6 py-3 rounded shadow w-full sm:w-auto text-center"
+          (click)="startExchange()">
+          Barter
+        </button>
+        <button *ngIf="showEditAndOverviewButtons" type="button"
+          class="btn btn-secondary" (click)="goToOverview()">
+          Back to Overview
+        </button>
+        <div class="sm:hidden" *ngIf="!isOwner">
+          <button class="btn btn-icon btn-secondary w-full" (click)="openReportDialog()" title="Report Skill">
+            <i class="material-icons-outlined mr-2">flag</i>
+            Report Skill
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,93 @@
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4 md:gap-0">
+      <div>
+        <h1 class="text-4xl font-bold">
+          Your Demands
+        </h1>
+      </div>
+      <!-- Dialog Button -->
+      <button [ngpDialogTrigger]="dialog"
+              class="flex items-center gap-2 px-4 py-2 bg-[#6B21A8] text-white rounded-full hover:bg-[#CBA1F9] transition-colors duration-200">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd"
+                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                clip-rule="evenodd"></path>
+        </svg>
+        <span>New</span>
+      </button>
+    </div>
+
+    <!-- Skeleton Loader -->
+    @if (isLoading()) {
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 justify-center items-center">
+        @for (i of [1,2,3]; track i) {
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 overflow-hidden">
+            <div class="mb-3">
+              <app-skeleton height="24px" width="120px" borderRadius="9999px"></app-skeleton>
+            </div>
+
+            <div class="space-y-2">
+              <app-skeleton height="28px" width="90%"></app-skeleton>
+              <app-skeleton height="28px" width="40%"></app-skeleton>
+            </div>
+
+            <div class="mt-4 flex justify-end">
+              <app-skeleton height="20px" width="100px"></app-skeleton>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (demands && demands.length > 0) {
+      <!-- Glass Card Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 justify-center items-center">
+        @for (demand of demands; track demand.id) {
+          <div class="group relative bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer overflow-hidden">
+            <!-- Gradient Overlay -->
+            <div
+              class="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl"
+              (click)="goToDetails(demand.id)"
+              (keydown)="goToDetails(demand.id)"
+              id="link-demand-{{demand.id}}"
+            ></div>
+
+            <!-- Category Badge -->
+            <span class="inline-block px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full mb-3">
+              {{ demand.category.name }}
+            </span>
+
+            <!-- Title -->
+            <h3 class="text-xl font-semibold text-gray-900 mb-2 break-words sm:truncate sm:max-w-[calc(100%)]">
+              {{ demand.title }}
+            </h3>
+
+            <!-- View Details Button -->
+            <div class="mt-4 flex justify-end">
+              <span class="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200">
+                View Details →
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- No Demands Placeholder -->
+      <div class="text-center py-12 bg-gray-50 rounded-xl">
+        <p class="text-gray-600 text-lg mb-4">
+          No demands have been created yet.
+        </p>
+        <p class="text-gray-500 text-sm">
+          Click "New" to get started.
+        </p>
+      </div>
+    }
+</div>
+
+<ng-template #dialog let-close="close">
+  <div ngpDialogOverlay class="fixed top-0 left-0 w-screen h-screen dialog-backdrop">
+    <div ngpDialog class="w-fit h-fit lg:ml-40 fixed top-1/2 left-1/2 md:p-8 p-4 bg-white dialog-container">
+      <app-create-demand (closeDialog)="close()"></app-create-demand>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,202 @@
+@use 'sass:color';
+
+// Variables
+$bg-color: #fbfbfc;
+$highlight: #6B21A8;
+$lighter-highlight: #CBA1F9;
+$lightest-highlight: #E9D5FF;
+$text-danger: #FC8C8C;
+$text-success: #6EE7B7;
+$text-warning: #FFD166;
+$text-secondary: #B0B0B0;
+$text-color: #334155;
+$border-color: #cbd5e1;
+
+// Layout variables
+$border-radius: 8px;
+$spacing-unit: 20px;
+
+// Font settings
+$main-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+$base-font-size: 16px;
+$heading-line-height: 1.2;
+$body-line-height: 1.6;
+
+// Mixins
+@mixin card-shadow {
+  box-shadow: 0 2px 8px rgba($highlight, 0.08);
+}
+
+@mixin info-box($color) {
+  background-color: rgba($color, 0.1);
+  border-left: 4px solid $color;
+  padding: $spacing-unit * 0.75;
+  margin: $spacing-unit 0;
+  border-radius: 0 $border-radius $border-radius 0;
+}
+
+// Main container
+.guidelines-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: $main-font;
+  line-height: $body-line-height;
+  color: $text-color;
+  padding: $spacing-unit;
+  background-color: $bg-color;
+
+  // Main heading
+  h1 {
+    text-align: center;
+    color: $highlight;
+    margin-bottom: $spacing-unit * 2;
+    font-size: 32px;
+    font-weight: 600;
+  }
+}
+
+// Section styling
+.section {
+  margin-bottom: $spacing-unit * 2;
+  padding: $spacing-unit;
+  border-radius: $border-radius;
+  background-color: white;
+  @include card-shadow;
+  border: 1px solid $border-color;
+
+  // Section title
+  &-title {
+    color: $highlight;
+    font-size: 24px;
+    margin-bottom: $spacing-unit;
+    padding-bottom: $spacing-unit * 0.5;
+    border-bottom: 2px solid $lighter-highlight;
+    line-height: $heading-line-height;
+    font-weight: 600;
+  }
+}
+
+// Subsection styling
+.subsection {
+  &-title {
+    color: $text-color;
+    font-size: 20px;
+    margin: $spacing-unit 0 ($spacing-unit * 0.75) 0;
+    line-height: $heading-line-height;
+    font-weight: 500;
+  }
+}
+
+// Lists
+.guideline {
+  &-list {
+    padding-left: $spacing-unit;
+    list-style-type: disc;
+
+    li::marker {
+      color: $lighter-highlight;
+    }
+  }
+
+  &-item {
+    margin-bottom: $spacing-unit * 0.75;
+    line-height: $body-line-height;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Info boxes
+.important-note {
+  @include info-box($lighter-highlight);
+  color: $highlight;
+}
+
+.warning {
+  @include info-box($text-warning);
+  color: color.adjust($text-warning, $lightness: -30%);
+}
+
+.tip {
+  @include info-box($text-success);
+  color: color.adjust($text-success, $lightness: -30%);
+}
+
+// Easter egg styling
+.easter-egg {
+  font-size: 0.9em;
+  color: $text-secondary;
+  font-style: italic;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: $lighter-highlight;
+  }
+}
+
+// Links
+a {
+  color: $highlight;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $lighter-highlight;
+    text-decoration: underline;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .guidelines-container {
+    padding: $spacing-unit * 0.75;
+  }
+
+  .section {
+    padding: $spacing-unit * 0.75;
+    margin-bottom: $spacing-unit * 1.5;
+
+    &-title {
+      font-size: 22px;
+    }
+  }
+
+  .subsection-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .guidelines-container {
+    padding: $spacing-unit * 0.5;
+  }
+
+  .section {
+    padding: $spacing-unit * 0.5;
+    margin-bottom: $spacing-unit;
+
+    &-title {
+      font-size: 20px;
+    }
+  }
+
+  .subsection-title {
+    font-size: 16px;
+  }
+
+  .guideline-list {
+    padding-left: $spacing-unit * 0.75;
+  }
+}
+
+// Transitions
+.section, .important-note, .warning, .tip {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($highlight, 0.12);
+  }
+}

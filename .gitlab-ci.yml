@@ -1,0 +1,156 @@
+services:
+  - name: postgis/postgis
+    alias: postgres
+    variables:
+      HEALTHCHECK_TCP_PORT: "5432"
+      POSTGRES_DB: barter
+      POSTGRES_USER: barter
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: trust
+  - name: rabbitmq:3-management
+    alias: rabbitmq
+    variables:
+      HEALTHCHECK_TCP_PORT: "5672"
+      RABBITMQ_DEFAULT_PORT: "5672"
+      RABBITMQ_DEFAULT_USER: barter
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_VHOST: /
+
+cache:
+  paths:
+    - .m2/
+
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
+  POSTGRES_DB: barter
+  POSTGRES_USER: barter
+  POSTGRES_PASSWORD: password
+  POSTGRES_HOST_AUTH_METHOD: trust
+
+  QUARKUS_DATASOURCE_DB: barter
+  QUARKUS_DATASOURCE_USERNAME: barter
+  QUARKUS_DATASOURCE_PASSWORD: password
+  QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/barter
+
+  QUARKUS_RABBITMQCLIENT_USERNAME: barter
+  QUARKUS_RABBITMQCLIENT_PASSWORD: password
+  QUARKUS_RABBITMQCLIENT_PORT: "5672"
+  QUARKUS_RABBITMQCLIENT_HOSTNAME: rabbitmq
+
+  BACKEND_TAG: registry.reset.inso-w.at/2024ws-ase-pr-group/24ws-ase-pr-inso-02/backend
+  BACKEND_TAG_PIPELINE: registry.reset.inso-w.at/2024ws-ase-pr-group/24ws-ase-pr-inso-02/backend:$CI_PIPELINE_ID
+
+
+  FRONTEND_TAG: registry.reset.inso-w.at/2024ws-ase-pr-group/24ws-ase-pr-inso-02/frontend
+  FRONTEND_TAG_PIPELINE: registry.reset.inso-w.at/2024ws-ase-pr-group/24ws-ase-pr-inso-02/frontend:$CI_PIPELINE_ID
+
+test-backend:
+  image: maven:3.9.9-eclipse-temurin-21-alpine
+  stage: test 
+  script:
+    # - apk update && apk add openjdk21
+    # - export JAVA_HOME="/usr/lib/jvm/java-21-openjdk/"
+    # - docker info
+    - cd backend
+    - mvn -B clean verify
+  artifacts:
+    when: always
+    paths:
+      - backend/target/surefire-reports/*.xml
+      - backend/target/quarkus-app/lib/
+      - backend/target/quarkus-app/app/
+      - backend/target/quarkus-app/*.jar
+      - backend/target/quarkus-app/quarkus/
+      - backend/target/failsafe-reports/*.xml
+      - backend/target/jacoco-report/jacoco.xml
+    reports:
+      junit: 
+        - backend/target/surefire-reports/*.xml
+        - backend/target/failsafe-reports/*.xml
+      coverage_report:
+        coverage_format: jacoco
+        path: backend/target/jacoco-report/jacoco.xml
+
+build-backend:
+  image: maven:3.9.9-eclipse-temurin-21-alpine
+  stage: build
+  only:
+    - dev
+    - master
+    - merge_requests
+    - tags
+  script:
+    - cd backend
+    - mvn install -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true -DskipTests
+  # artifacts:
+  #   when: always
+  #   paths:
+  #     - backend/target/surefire-reports/*.xml
+  #     - backend/target/quarkus-app/lib/
+  #     - backend/target/quarkus-app/app/
+  #     - backend/target/quarkus-app/*.jar
+  #     - backend/target/quarkus-app/quarkus/
+  #   reports:
+  #     junit: 
+  #       - backend/target/surefire-reports/*.xml
+  #       - backend/target/failsafe-reports/*.xml
+  #     coverage_report:
+  #       coverage_format: jacoco
+  #       path: backend/target/jacoco-report/jacoco.xml
+
+build-frontend:
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.2-debug
+    entrypoint: [""]
+  stage: build
+  only:
+    - master
+    - dev
+    - merge_requests
+    - tags
+  before_script:
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - cd frontend
+    - /kaniko/executor --context "dir://${CI_PROJECT_DIR}/frontend" --dockerfile "Dockerfile" --destination $FRONTEND_TAG_PIPELINE 
+
+# e2e-test:
+#   image: mcr.microsoft.com/playwright:v1.49.1-noble
+#   stage: test
+#   # only:
+#   #   - master
+#   #   - dev
+#   #   - merge_request
+#   script: 
+#     - apt update -y && apt upgrade -y
+#     - apt install openjdk-21-jdk -y
+#     - cd backend
+#     - ./mvnw quarkus:dev -DskipTests &
+#     - cd ../frontend
+#     - npm ci
+#     - npx playwright test
+  
+# deploy:
+#   stage: deploy
+#   image: bitnami/kubectl
+#   script:
+#     - cd deployment
+#     - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' frontend.yaml
+#     - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' backend.yaml
+#     - cat frontend.yaml | grep "image"
+#     - cat backend.yaml | grep "image"
+#     - kubectl apply -f .
+#     # - sleep 20
+#     # - kubectl describe deployments.apps postgres
+#     # - kubectl describe deployments.apps barter-frontend
+#     # - kubectl describe deployments.apps barter-backend
+#   only:
+#     - master
+#     - tags
+#
+

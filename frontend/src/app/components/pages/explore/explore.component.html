@@ -1,0 +1,133 @@
+<div class="flex flex-col gap-4 m-8">
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+    <h1 class="text-4xl font-bold">Nearby Skills</h1>
+    <div class="flex items-center gap-2 self-end sm:self-auto">
+      <span class="text-sm">Offers</span>
+      <button ngpSwitch [(ngpSwitchChecked)]="showDemand">
+        <span ngpSwitchThumb></span>
+      </button>
+      <span class="text-sm">Demands</span>
+    </div>
+  </div>
+
+  <!-- Categories skeleton -->
+  @if (isCategoriesLoading()) {
+    <div class="hidden sm:flex sm:flex-wrap gap-2 my-3">
+      @for (i of [1,2,3,4,5]; track i) {
+        <app-skeleton width="100px" height="32px" borderRadius="16px"></app-skeleton>
+      }
+    </div>
+  } @else {
+    <div class="hidden sm:flex sm:flex-wrap gap-2 my-3">
+      @for (category of skillCategories; track category) {
+        <pill [label]="category.name" [selected]="selectedCategory() === category" (onClick)="onCategoryChange(category)"
+          class="text-base"></pill>
+      }
+    </div>
+  }
+
+  <div class="sm:hidden py-2">
+    <select ngpSelect class="w-full" [(ngModel)]="selectedCategory">
+      <option [ngValue]="null">All</option>
+      @for (category of skillCategories; track category) {
+      <option [ngValue]="category">{{ category.name }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- Map skeleton -->
+  @if (isLoading()) {
+    <div class="relative">
+      <app-skeleton height="500px" borderRadius="12px"></app-skeleton>
+    </div>
+  } @else {
+    <div *ngIf="locations">
+      <app-map [locations]="locations()" [center]="center" height="500px"></app-map>
+    </div>
+  }
+
+  <div class="flex flex-col items-center sm:items-end max-w-xs sm:max-w-md w-full ml-auto">
+    <div class="flex justify-between w-full text-sm text-gray-600 mb-1">
+      <span>Range: {{debouncedSliderValue() | number:'1.0-0'}}km</span>
+    </div>
+    <div [(ngpSliderValue)]="sliderValue" ngpSlider class="w-full">
+      <div ngpSliderTrack>
+        <div ngpSliderRange></div>
+      </div>
+      <div ngpSliderThumb></div>
+    </div>
+    <div class="flex justify-between w-full text-sm text-gray-600 mt-1">
+      <span>0km</span>
+      <span>100km</span>
+    </div>
+  </div>
+
+  <!-- Skills grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
+    @if (isSkillsLoading() && !previousListings) {
+      @for (i of [1,2,3,4,5,6,7,8,9,10,11,12]; track i) {
+        <div class="group relative bg-white rounded-xl p-6 shadow-sm border border-gray-100 overflow-hidden">
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-row justify-between">
+              <app-skeleton height="25px" width="80px"></app-skeleton>
+              <app-skeleton height="25px" width="50px"></app-skeleton>
+            </div>
+            <app-skeleton height="40px" width="70%"></app-skeleton>
+            <app-skeleton height="30px" width="30%"></app-skeleton>
+            <div class="mt-4 flex justify-end">
+              <app-skeleton height="20px" width="70px"></app-skeleton>
+            </div>
+          </div>
+        </div>
+      }
+    } @else {
+      @for (item of (isSkillsLoading() ? previousListings : skillListings()); track item.id) {
+        <div class="skill-item group relative bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer overflow-hidden h-fit"
+             [class.opacity-50]="isSkillsLoading()">
+          <!-- Gradient Overlay -->
+          <div
+            class="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl"
+            [routerLink]="[showDemand() ? '/demands' : '/offers', item.id]"
+            id="link-offer-{{item.id}}">
+          </div>
+
+          <div class="flex flex-row justify-between">
+            <!-- Category Badge -->
+            <span class="inline-block px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full mb-3">
+              {{getCategoryName(item.category.id)}}
+            </span>
+
+            <!-- Distance to user -->
+            <span class="text-right whitespace-nowrap flex justify-end">
+              {{calculateDistanceToCurrentUser(item.byUser.location) | number:'1.2-2'}}km
+            </span>
+          </div>
+
+          <!-- Title -->
+          <h3 class="text-xl font-semibold text-gray-900 mb-2 break-words sm:truncate sm:max-w-[calc(100%)]">
+            {{item.title}}
+          </h3>
+
+          <span>
+            by &#x40;{{item.byUser.username}}
+          </span>
+
+          <!-- View Details Button -->
+          <div class="mt-4 flex justify-end">
+            <span class="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200">
+              View Details →
+            </span>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="flex justify-center mt-0 mb-8 sm:my-8">
+    <app-pagination
+      [currentPage]="page()"
+      [totalPages]="Math.ceil(totalItems() / pageSize)"
+      (pageChange)="page.set($event)">
+    </app-pagination>
+  </div>
+</div>

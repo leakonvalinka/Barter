@@ -1,0 +1,44 @@
+@use '../../../../styles/_variables.scss' as *;
+@use 'sass:color';
+
+.navigation {
+    background-color: $lightest-highlight;
+    color: $highlight;
+    z-index: 1000;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+
+}
+
+.nav-link {
+    color: $highlight;
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    flex-direction: column;
+
+    @media (min-width: 1024px) {
+        display: flex;
+        flex-direction: row;
+    }
+}
+
+.nav-link:hover {
+    color: color.adjust($highlight, $lightness: 10%);
+}
+
+.nav-icon {
+    font-size: 2rem;
+    padding-top: 1px;
+    margin: 0 auto;
+}
+
+.nav-link-text {
+    display: block;
+    font-size: 0.7rem;
+
+    @media (min-width: 1024px) {
+        display: block;
+        font-size: 1.5rem;
+    }
+}

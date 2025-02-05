@@ -1,0 +1,18 @@
+<div class="map-container w-full h-full">
+    <div class="card p-6">
+        <ng-container *ngIf="headerTemplate; else defaultHeader">
+            <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
+        </ng-container>
+        <ng-template #defaultHeader>
+            <h1 *ngIf="title" class="text-3xl font-semibold mx-5 my-4">{{title}}</h1>
+        </ng-template>
+        <div class="map-view-container bg-purple-50 rounded-lg overflow-hidden">
+            <google-map [options]="options" [height]="height" width="100%" (mapInitialized)="onMapInitialized($event)">
+                @for (circle of circles; track circle.circleOptions.center) {
+                    <map-circle [options]="circle.circleOptions" (circleClick)="onCircleClick($event, circle)"></map-circle>
+                }
+                <map-info-window></map-info-window>
+            </google-map>
+        </div>
+    </div>
+</div>

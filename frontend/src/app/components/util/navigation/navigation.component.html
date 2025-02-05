@@ -1,0 +1,100 @@
+<nav class="navigation lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-80 fixed bottom-0 left-0 right-0 h-16 w-full drop-shadow-xl">
+  <div class="flex lg:align-top align-middle lg:flex-col lg:h-full h-full p-2 lg:pl-10 px-3">
+
+    <div class="hidden lg:flex items-center logo mb-10 mt-5 cursor-pointer" routerLink="/explore">
+      <img src="logo/logo_purple_500x500.png" alt="logo" class="w-10 h-10 mr-4">
+      <span class="font-bold" style="font-size: 3rem; margin-top: 3px;">Barter</span>
+    </div>
+
+    <!-- <div class="flex nav-link flex-1 lg:flex-initial" routerLink="/dashboard" routerLinkActive="active">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">home</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a>Dashboard</a>
+      </div>
+    </div> -->
+
+    <div class="flex nav-link flex-1 lg:flex-initial" routerLink="/explore" routerLinkActive="active">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">pin_drop</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a>Explore</a>
+      </div>
+    </div>
+
+    <div class="flex nav-link flex-1 lg:flex-initial" routerLink="/offers" routerLinkActive="active">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">subject</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a><span class="hidden lg:inline">My </span>Offers</a>
+      </div>
+    </div>
+
+    <div class="flex nav-link flex-1 lg:flex-initial" routerLink="/demands" routerLinkActive="active">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">search</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a><span class="hidden lg:inline">My </span>Demands</a>
+      </div>
+    </div>
+
+    <div class="flex nav-link flex-1 lg:flex-initial" routerLink="/recommend" routerLinkActive="active">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">favorite_border</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a>For You</a>
+      </div>
+    </div>
+
+    <div class="flex nav-link flex-1 lg:flex-initial" routerLink="/chat" routerLinkActive="active">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">chat</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a><span class="hidden lg:inline">Messages</span><span class="lg:hidden">Chat</span></a>
+      </div>
+    </div>
+
+    <!-- <div class="nav-link hidden lg:flex flex-1 lg:flex-initial" routerLink="/notifications" routerLinkActive="active">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">notifications</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a>Notifications</a>
+      </div>
+    </div> -->
+
+    <div class="nav-link hidden lg:flex flex-1 lg:flex-initial" routerLink="/admin/user-reports" routerLinkActive="active" *ngIf="userRole === 'ADMIN'">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">report</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a>User-Reports</a>
+      </div>
+    </div>
+
+    <div class="nav-link hidden lg:flex flex-1 lg:flex-initial" routerLink="/admin/post-reports" routerLinkActive="active" *ngIf="userRole === 'ADMIN'">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">report</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a>Post-Reports</a>
+      </div>
+    </div>
+
+    <div class="flex nav-link flex-1 lg:flex-initial lg:mt-auto" routerLink="/profile/{{getCurrentUsername()}}" routerLinkActive="active">
+      <div class="lg:mr-6 mr-0 flex">
+        <span class="material-icons-outlined nav-icon">account_circle</span>
+      </div>
+      <div class="nav-link-text lg:text-left text-center">
+        <a>Profile</a>
+      </div>
+    </div>
+
+  </div>
+</nav>
